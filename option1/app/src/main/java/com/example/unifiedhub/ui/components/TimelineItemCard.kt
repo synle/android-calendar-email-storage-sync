@@ -1,157 +1,152 @@
-// =============================================================================
-// TimelineItemCard.kt — How each item looks in the timeline
-// =============================================================================
-//
-// WHAT IS A @Composable FUNCTION?
-//
-// In Jetpack Compose, UI is built using regular Kotlin functions marked
-// with @Composable. Each function describes a piece of UI.
-//
-// Think of it like building with LEGO blocks:
-//   - TimelineItemCard = one LEGO brick (shows one item)
-//   - TimelineScreen = the whole LEGO structure (shows the list)
-//   - Each brick is a @Composable function
-//
-// KEY DIFFERENCE from traditional Android:
-//   OLD way: XML layout files + Activity code to populate them
-//   NEW way: Everything is Kotlin code — layout AND data together
-//
-// HOW COMPOSE WORKS:
-//   1. You write functions that DESCRIBE what the UI should look like
-//   2. When data changes, Compose REDRAWS only the parts that changed
-//   3. You never manually say "update this TextView" — it's automatic!
-// =============================================================================
-
 package com.example.unifiedhub.ui.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.unifiedhub.data.model.ItemType
 import com.example.unifiedhub.data.model.TimelineItem
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
-// --- The card that displays one timeline item ---
+/**
+ * Accordion-style card. Tap the header to expand and see full content.
+ * Collapsed view shows: type badge, date, title (subject/contact/event), and a one-line summary.
+ * Expanded view adds: full description (email body / SMS text / event description) and any extra info.
+ */
 @Composable
 fun TimelineItemCard(item: TimelineItem) {
-    // Card = a Material Design container with rounded corners and elevation
+    var expanded by rememberSaveable(item.id) { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
-            .fillMaxWidth()         // Take full width of screen
-            .padding(horizontal = 16.dp, vertical = 4.dp),  // Space around card
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .animateContentSize(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface  // Card background
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),       // Space inside the card
-            verticalAlignment = Alignment.Top
+                .clickable { expanded = !expanded }
+                .padding(12.dp)
         ) {
-            // --- Left side: colored icon ---
-            // Each type gets a unique icon and color so users can quickly
-            // scan the timeline and identify item types at a glance.
-            Surface(
-                modifier = Modifier.size(40.dp),
-                shape = MaterialTheme.shapes.small,
-                color = getTypeColor(item.type).copy(alpha = 0.15f)  // Light tint background
-            ) {
-                Icon(
-                    imageVector = getTypeIcon(item.type),
-                    contentDescription = item.type.name,
-                    tint = getTypeColor(item.type),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(24.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // --- Right side: text content ---
-            Column(modifier = Modifier.weight(1f)) {
-                // --- Top row: type label + time ---
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+            Row(verticalAlignment = Alignment.Top) {
+                Surface(
+                    modifier = Modifier.size(40.dp),
+                    shape = MaterialTheme.shapes.small,
+                    color = getTypeColor(item.type).copy(alpha = 0.15f)
                 ) {
-                    // Type label badge (e.g., "EMAIL", "SMS")
-                    Surface(
-                        shape = MaterialTheme.shapes.extraSmall,
-                        color = getTypeColor(item.type).copy(alpha = 0.1f)
+                    Icon(
+                        imageVector = getTypeIcon(item.type),
+                        contentDescription = item.type.name,
+                        tint = getTypeColor(item.type),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(24.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Surface(
+                            shape = MaterialTheme.shapes.extraSmall,
+                            color = getTypeColor(item.type).copy(alpha = 0.1f)
+                        ) {
+                            Text(
+                                text = getTypeLabel(item.type),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = getTypeColor(item.type),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                         Text(
-                            text = getTypeLabel(item.type),
+                            text = formatTimestamp(item.timestamp),
                             style = MaterialTheme.typography.labelSmall,
-                            color = getTypeColor(item.type),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     }
 
-                    // Time display
-                    Text(
-                        text = formatTimestamp(item.timestamp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // --- Title ---
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis  // Show "..." if text is too long
-                )
-
-                // --- Description (if present) ---
-                if (item.description.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = item.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-                // --- Extra info badge (e.g., "Missed", "Received") ---
-                if (item.extraInfo.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
-                        text = item.extraInfo,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (item.extraInfo == "Missed") {
-                            Color(0xFFE53935)  // Red for missed calls
-                        } else {
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        }
+                        text = item.title,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
                     )
+
+                    if (item.extraInfo.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = secondaryLine(item),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
                 }
+
+                Icon(
+                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = if (expanded) "Collapse" else "Expand",
+                    modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+
+            if (expanded && item.description.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = item.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                )
             }
         }
     }
 }
 
-// --- Helper: Get the right icon for each type ---
-// Icons help users quickly identify what type each item is
+/**
+ * The secondary line shown under the title in the collapsed view.
+ * - Email: sender ("From: Sarah Johnson")
+ * - SMS:   direction ("Received" / "Sent")
+ * - Calendar: location, if any
+ * - Call: type ("Missed", "Received", etc.)
+ */
+private fun secondaryLine(item: TimelineItem): String = when (item.type) {
+    ItemType.EMAIL -> "From: ${item.extraInfo}"
+    ItemType.SMS -> item.extraInfo
+    ItemType.CALENDAR_EVENT -> if (item.extraInfo.isNotBlank()) "📍 ${item.extraInfo}" else ""
+    ItemType.CALL -> item.extraInfo
+}
+
 fun getTypeIcon(type: ItemType): ImageVector = when (type) {
     ItemType.EMAIL -> Icons.Default.Email
     ItemType.SMS -> Icons.Default.Sms
@@ -159,15 +154,13 @@ fun getTypeIcon(type: ItemType): ImageVector = when (type) {
     ItemType.CALENDAR_EVENT -> Icons.Default.CalendarMonth
 }
 
-// --- Helper: Get the right color for each type ---
 fun getTypeColor(type: ItemType): Color = when (type) {
-    ItemType.EMAIL -> Color(0xFF1976D2)        // Blue
-    ItemType.SMS -> Color(0xFF43A047)          // Green
-    ItemType.CALL -> Color(0xFFFF8F00)         // Amber/Orange
-    ItemType.CALENDAR_EVENT -> Color(0xFF8E24AA) // Purple
+    ItemType.EMAIL -> Color(0xFF1976D2)
+    ItemType.SMS -> Color(0xFF43A047)
+    ItemType.CALL -> Color(0xFFFF8F00)
+    ItemType.CALENDAR_EVENT -> Color(0xFF8E24AA)
 }
 
-// --- Helper: Get a human-readable label ---
 fun getTypeLabel(type: ItemType): String = when (type) {
     ItemType.EMAIL -> "EMAIL"
     ItemType.SMS -> "SMS"
@@ -175,8 +168,6 @@ fun getTypeLabel(type: ItemType): String = when (type) {
     ItemType.CALENDAR_EVENT -> "EVENT"
 }
 
-// --- Helper: Format timestamp to a readable string ---
-// Shows "Today 2:30 PM", "Yesterday 9:15 AM", or "Feb 26, 3:00 PM"
 fun formatTimestamp(timestamp: Long): String {
     val now = Calendar.getInstance()
     val itemTime = Calendar.getInstance().apply { timeInMillis = timestamp }
@@ -184,17 +175,14 @@ fun formatTimestamp(timestamp: Long): String {
     val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
 
     return when {
-        // Same day
         now.get(Calendar.DAY_OF_YEAR) == itemTime.get(Calendar.DAY_OF_YEAR) &&
-                now.get(Calendar.YEAR) == itemTime.get(Calendar.YEAR) -> {
+            now.get(Calendar.YEAR) == itemTime.get(Calendar.YEAR) -> {
             "Today ${timeFormat.format(Date(timestamp))}"
         }
-        // Yesterday
         now.get(Calendar.DAY_OF_YEAR) - itemTime.get(Calendar.DAY_OF_YEAR) == 1 &&
-                now.get(Calendar.YEAR) == itemTime.get(Calendar.YEAR) -> {
+            now.get(Calendar.YEAR) == itemTime.get(Calendar.YEAR) -> {
             "Yesterday ${timeFormat.format(Date(timestamp))}"
         }
-        // Older
         else -> {
             val dateFormat = SimpleDateFormat("MMM dd, h:mm a", Locale.getDefault())
             dateFormat.format(Date(timestamp))

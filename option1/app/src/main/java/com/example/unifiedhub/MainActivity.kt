@@ -103,7 +103,9 @@ class MainActivity : ComponentActivity() {
                     // Show the main timeline
                     TimelineScreen(
                         uiState = uiState,
-                        onToggleFilter = { viewModel.toggleFilter(it) },
+                        onSelectTab = { viewModel.selectTab(it) },
+                        onSearchChange = { viewModel.setSearchQuery(it) },
+                        onToggleSort = { viewModel.toggleSortDirection() },
                         onGenerateDigest = { viewModel.generateDailyDigest() },
                         onDismissDigest = { viewModel.clearDigest() },
                         onShareDigest = { text -> shareDigest(text) }
