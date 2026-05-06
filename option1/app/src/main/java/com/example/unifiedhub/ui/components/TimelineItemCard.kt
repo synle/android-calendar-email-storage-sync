@@ -121,7 +121,7 @@ fun TimelineItemCard(item: TimelineItem) {
 
             if (expanded && item.description.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = item.description,
