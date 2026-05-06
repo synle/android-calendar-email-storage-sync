@@ -1,0 +1,95 @@
+<!--
+===================================================================================
+AndroidManifest.xml — Your app's "ID card"
+===================================================================================
+WHY THIS FILE EXISTS:
+    Every Android app MUST have this file. It tells the Android system:
+    1. What PERMISSIONS your app needs (camera, contacts, SMS, etc.)
+    2. What SCREENS (Activities) your app has
+    3. What your app's name and icon are
+    4. What Android versions it supports
+
+Think of it as a PASSPORT for your app — Android checks it before letting
+your app do anything.
+
+ABOUT PERMISSIONS:
+    Android has two types of permissions:
+
+    1. NORMAL permissions — granted automatically (e.g., internet access)
+    2. DANGEROUS permissions — user must explicitly approve (e.g., reading SMS)
+
+    Calendar, SMS, and Call Logs are all DANGEROUS permissions because they
+    access PRIVATE user data. That's why we need BOTH:
+    - Declare them here (so the system knows we MIGHT need them)
+    - Ask the user at RUNTIME (so they can say yes or no)
+===================================================================================
+-->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+    =========================================================================
+    PERMISSIONS — What our app needs access to
+    =========================================================================
+    Each permission below is like asking:
+    "Hey Android, my app needs to read [X]. Is that okay?"
+
+    The user will see a popup asking them to approve each one.
+    =========================================================================
+    -->
+
+    <!-- READ CALENDAR: Access the user's calendar events -->
+    <!-- WHY: So we can show upcoming meetings, birthdays, etc. in the timeline -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+
+    <!-- READ SMS: Access text messages -->
+    <!-- WHY: So we can show received/sent messages in the timeline -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+
+    <!-- READ CALL LOG: Access phone call history -->
+    <!-- WHY: So we can show incoming/outgoing/missed calls in the timeline -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
+    <!-- READ CONTACTS: Access contact names -->
+    <!-- WHY: So we can show "Call from Mom" instead of "Call from +1234567890" -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!--
+    =========================================================================
+    APPLICATION — The actual app configuration
+    =========================================================================
+    -->
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Unified Hub"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.UnifiedHub"
+        tools:targetApi="34">
+
+        <!--
+        This is our MAIN screen (Activity).
+
+        WHY the intent-filter?
+        It tells Android: "This is the screen to show when the user
+        taps the app icon." Without it, your app would install but
+        you couldn't open it!
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="Unified Hub"
+            android:theme="@style/Theme.UnifiedHub">
+            <intent-filter>
+                <!-- MAIN = this is the entry point -->
+                <action android:name="android.intent.action.MAIN" />
+                <!-- LAUNCHER = show this in the app drawer -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

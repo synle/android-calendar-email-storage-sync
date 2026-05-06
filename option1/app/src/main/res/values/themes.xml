@@ -1,0 +1,11 @@
+<!--
+    WHY: Even though we use Jetpack Compose for UI, Android still needs
+    a basic XML theme for the Activity "container". This is minimal —
+    Compose handles all the real styling.
+-->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.UnifiedHub" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- We remove the ActionBar because Compose will handle our top bar -->
+    </style>
+</resources>
