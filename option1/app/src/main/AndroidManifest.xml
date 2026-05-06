@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 ===================================================================================
 AndroidManifest.xml — Your app's "ID card"
@@ -24,7 +25,6 @@ ABOUT PERMISSIONS:
     - Ask the user at RUNTIME (so they can say yes or no)
 ===================================================================================
 -->
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
