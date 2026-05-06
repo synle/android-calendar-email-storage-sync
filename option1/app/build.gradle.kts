@@ -127,4 +127,7 @@ dependencies {
     // --- Debug tools ---
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // --- Local unit tests (JVM, no Android instrumentation) ---
+    testImplementation("junit:junit:4.13.2")
 }

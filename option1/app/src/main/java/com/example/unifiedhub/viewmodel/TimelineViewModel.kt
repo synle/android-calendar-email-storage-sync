@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.unifiedhub.data.model.ItemType
 import com.example.unifiedhub.data.model.TimelineItem
 import com.example.unifiedhub.data.repository.TimelineRepository
+import com.example.unifiedhub.data.util.TimelineFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -166,24 +167,7 @@ class TimelineViewModel(
         tab: TabType,
         query: String,
         descending: Boolean
-    ): List<TimelineItem> {
-        val q = query.trim()
-        val filteredByType = items.filter { it.type == tab.itemType }
-        val searched = if (q.isBlank()) {
-            filteredByType
-        } else {
-            filteredByType.filter { item ->
-                item.title.contains(q, ignoreCase = true) ||
-                    item.description.contains(q, ignoreCase = true) ||
-                    item.extraInfo.contains(q, ignoreCase = true)
-            }
-        }
-        return if (descending) {
-            searched.sortedByDescending { it.timestamp }
-        } else {
-            searched.sortedBy { it.timestamp }
-        }
-    }
+    ): List<TimelineItem> = TimelineFilter.recomputeVisible(items, tab, query, descending)
 
     private fun formatTime(timestamp: Long): String {
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
