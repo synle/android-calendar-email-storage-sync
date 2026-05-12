@@ -29,8 +29,8 @@ android {
         applicationId = "com.example.unifiedhub"  // Unique ID on Google Play
         minSdk = 33        // Minimum Android version: Android 13
         targetSdk = 34     // We follow Android 14 behavior rules
-        versionCode = 1    // Internal version number (for updates)
-        versionName = "1.0" // What users see
+        versionCode = 2    // Internal version number (for updates)
+        versionName = "0.1.2" // What users see
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
