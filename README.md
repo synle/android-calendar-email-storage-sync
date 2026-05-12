@@ -9,7 +9,7 @@ Native Android app (Kotlin + Jetpack Compose) that aggregates **Email**, **Calen
 > | [`option1/`](option1/) | **Built in CI** — primary | MVVM + StateFlow + ContentResolver readers. Lightweight, single-screen Compose. |
 > | [`option2/`](option2/) | Reference / WIP | Hilt + Room + WorkManager + KSP. Heavier; needs `gradle wrapper` regen before building. |
 
-CI builds **option1** by default. See [`dev.md`](dev.md) for build, sideload, and CI artifact instructions.
+CI builds **option1** by default. See [`DEV.md`](DEV.md) for build, sideload, and CI artifact instructions.
 
 ## What the app does
 
@@ -40,4 +40,4 @@ Declared in `option1/app/src/main/AndroidManifest.xml`, requested at runtime:
 
 ## Build / install
 
-See [`dev.md`](dev.md) for the full toolchain table, local build, and how to download + sideload the CI APK artifact.
+See [`DEV.md`](DEV.md) for the full toolchain table, local build, and how to download + sideload the CI APK artifact.
